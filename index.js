@@ -1,11 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const runReplit = require('./runReplit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
+// usa il parser JSON integrato in express
+app.use(express.json());
 
 app.post('/', async (req, res) => {
   const prompt = req.body.prompt;
@@ -18,7 +18,7 @@ app.post('/', async (req, res) => {
     res.json({ webview_url: url });
   } catch (err) {
     console.error('Errore Puppeteer:', err);
-    res.status(500).json({ error: 'Errore durante l'esecuzione di Puppeteer' });
+    res.status(500).json({ error: 'Errore durante l\'esecuzione di Puppeteer' });
   }
 });
 
