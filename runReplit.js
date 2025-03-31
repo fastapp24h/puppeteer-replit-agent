@@ -4,39 +4,31 @@ const puppeteer = require('puppeteer-core');
 module.exports = async function runReplit(prompt) {
   let browser;
   try {
-    const executablePath = await chromium.executablePath;
-
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath,
-      headless: chromium.headless,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless
     });
 
     const page = await browser.newPage();
+
+    // Vai su Replit homepage
     await page.goto('https://replit.com/~', { waitUntil: 'networkidle2' });
 
-    // Simula il click sul pulsante "Create"
-    await page.waitForSelector('button:has-text("Create")', { timeout: 15000 });
-    await page.click('button:has-text("Create")');
+    // Aspetta un elemento per confermare che la pagina è caricata
+    await page.waitForSelector('header', { timeout: 15000 });
 
-    // Inserisci il prompt
-    await page.waitForSelector('textarea[placeholder*="What would you like to make"]', { timeout: 15000 });
-    await page.type('textarea[placeholder*="What would you like to make"]', prompt, { delay: 30 });
-    await page.keyboard.press('Enter');
+    // Log di debug (opzionale)
+    console.log('Pagina caricata:', page.url());
 
-    // Attendi la demo
-    await page.waitForSelector('iframe', { timeout: 60000 });
-
-    const finalUrl = await page.evaluate(() => {
-      const iframe = document.querySelector('iframe');
-      return iframe ? iframe.src : null;
-    });
-
+    // Chiudi il browser e restituisci la URL attuale
     await browser.close();
-    return finalUrl;
+    return page.url();
+    
   } catch (err) {
     if (browser) await browser.close();
-    throw new Error('Errore interno Puppeteer: ' + err.message);
+    console.error('Errore completo Puppeteer:', err);
+    throw new Error('Errore durante l\'esecuzione di Puppeteer: ' + err.message);
   }
 };
