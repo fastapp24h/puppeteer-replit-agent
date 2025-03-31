@@ -1,19 +1,13 @@
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+import chromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
 
-module.exports = async function runReplit(prompt) {
+const runReplit = async (prompt) => {
   let browser;
   try {
-    const executablePath = await chromium.executablePath;
-
-    if (!executablePath) {
-      throw new Error("Chrome executablePath is null");
-    }
-
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath,
+      executablePath: await chromium.executablePath,
       headless: chromium.headless
     });
 
@@ -28,7 +22,6 @@ module.exports = async function runReplit(prompt) {
     await page.keyboard.press('Enter');
 
     await page.waitForSelector('iframe', { timeout: 60000 });
-
     const finalUrl = await page.evaluate(() => {
       const iframe = document.querySelector('iframe');
       return iframe ? iframe.src : null;
@@ -41,3 +34,5 @@ module.exports = async function runReplit(prompt) {
     throw new Error('Errore interno Puppeteer: ' + err.message);
   }
 };
+
+export default runReplit;
