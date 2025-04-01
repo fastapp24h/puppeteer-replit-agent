@@ -10,6 +10,7 @@ module.exports = async function runReplit(prompt) {
 
     const page = await browser.newPage();
     await page.goto('https://replit.com/~', { waitUntil: 'networkidle2' });
+
     await page.waitForSelector('header', { timeout: 15000 });
 
     console.log('Pagina caricata:', page.url());
@@ -18,7 +19,6 @@ module.exports = async function runReplit(prompt) {
   } catch (err) {
     if (browser) await browser.close();
     console.error('Errore completo Puppeteer:', err);
-    throw new Error('Errore durante l\'esecuzione di Puppeteer: ' + err.message);
+    throw new Error("Errore durante l'esecuzione di Puppeteer: " + err.message);
   }
-};
 };
