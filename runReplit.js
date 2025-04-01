@@ -9,18 +9,12 @@ module.exports = async function runReplit(prompt) {
     });
 
     const page = await browser.newPage();
-
-    // Vai su Replit homepage
     await page.goto('https://replit.com/~', { waitUntil: 'networkidle2' });
-
-    // Aspetta un elemento per confermare che la pagina è caricata
     await page.waitForSelector('header', { timeout: 15000 });
 
     console.log('Pagina caricata:', page.url());
-
     await browser.close();
     return page.url();
-
   } catch (err) {
     if (browser) await browser.close();
     console.error('Errore completo Puppeteer:', err);
